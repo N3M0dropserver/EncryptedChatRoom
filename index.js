@@ -15,8 +15,10 @@ const fileUpload = require('express-fileupload');
 var loginerror = undefined
 var numUsers = 0;
 
+require('dotenv').config()
+
 app.use(require('express-session')({
-    secret: 'secret key here',
+    secret: process.env.SECRET,
     saveUninitialized: true,
     resave: true
 }));
