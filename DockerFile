@@ -1,0 +1,19 @@
+FROM alpine:3.14
+RUN apk add --update npm nodejs
+RUN apk add mongodb
+RUN apk add mongodb-tools
+RUN mkdir -p /data/db/
+RUN chown `root` /data/db
+RUN rc-update add mongodb default
+RUN rc-service mongodb start
+
+LABEL version="1.0"
+LABEL description="A simple encrypted chat room"
+
+RUN cd /app && npm i 
+
+EXPOSE 3333/tcp
+
+WORKDIR /app
+
+CMD ["nohup","node index.js"]

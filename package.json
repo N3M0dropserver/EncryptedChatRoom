@@ -1,0 +1,39 @@
+{
+  "name": "EncChatRoom",
+  "version": "1.0.0",
+  "description": "a simple encrypted chat room",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/N3M0dropserver/EncryptedChatRoom.git"
+  },
+  "keywords": [
+    "Resume"
+  ],
+  "author": "Zac Wesley-Brown",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/N3M0dropserver/EncryptedChatRoom/issues"
+  },
+  "homepage": "https://github.com/N3M0dropserver/EncryptedChatRoom#readme",
+  "dependencies": {
+    "@editorjs/editorjs": "^2.19.0",
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.9",
+    "express-session": "^1.17.1",
+    "http": "^0.0.1-security",
+    "mongoose": "^5.9.27",
+    "nodemailer": "^6.4.11",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.4.1"
+  }
+}
