@@ -36,7 +36,7 @@
 					User Login
 				</span>
 				<%if (error != "" && error != undefined) {%>
-					<span class="alert-danger"><%error%></span>
+					<span class="alert-danger"><%=error%></span>
 				<%}%>
 				<form class="login100-form validate-form p-b-33 p-t-5" action="/login" method="POST">
 
@@ -55,8 +55,9 @@
 							Login
 						</button>
 					</div>
-
+					<span>Dont have an account? Register <a href="/register">here.</a></span>
 				</form>
+
 			</div>
 		</div>
 	</div>

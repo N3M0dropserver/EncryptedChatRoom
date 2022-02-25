@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Encrypted Chat list</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="/chat/main.css">
+  <!-- <link rel="stylesheet" src="/chat/style.css"> -->
 </head>
 <body>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   <ul class="pages">
     <li class="chat page">
       <div class="chatArea">
         <ul class="messages"></ul>
       </div>
-      <input class="inputMessage" placeholder="Type here..."/>
+    </li>
+    <li class="login page">
+      <div class="form">
+        <h3 class="title">You will be anonymous but please pick your nickname?</h3>
+        <input class="usernameInput" type="text" maxlength="14" />
+      </div>
     </li>
   </ul>
+  <input style="width:100%; background-color:gray" class="inputMessage" name="message" onsubmit="sendMessage()" placeholder="Type here..."/>
+  <input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
 
   <script type="text/javascript">
-      $(function() {
+  var a = function() {
     const FADE_TIME = 150; // ms
     const TYPING_TIMER_LENGTH = 400; // ms
     const COLORS = [
@@ -54,12 +63,27 @@
     }
   
     // Sets the client's username
-    console.log("username:"<%user.username%>)
-    socket.emit('add user', <%user.username%>);
+    $chatPage.show();
+    socket.emit('add user', "<%=username%>");
+    const setUsername = () => {
+      // username = cleanInput($usernameInput.val().trim());
 
+      // If the username is valid
+      if (username) {
+        // $loginPage.fadeOut();
+        $chatPage.show();
+        // $loginPage.off('click');
+        $currentInput = $inputMessage.focus();
+
+        // Tell the server your username
+        socket.emit('add user', "<%=username%>");
+      }
+    }
+    
     // Sends a chat message
     const sendMessage = () => {
       let message = $inputMessage.val();
+      console.log("mesage:",message);
       // Prevent markup from being injected into the message
       message = cleanInput(message);
       // if there is a non-empty message and a socket connection
@@ -85,17 +109,25 @@
         options.fade = false;
         $typingMessages.remove();
       }
-  
+      
       const $usernameDiv = $('<span class="username"/>')
-        .text(data.username)
+      console.log("$usernameDiv:", $usernameDiv )
+      $usernameDiv
+        .text(data.username);
+      $usernameDiv
         .css('color', getUsernameColor(data.username));
       const $messageBodyDiv = $('<span class="messageBody">')
         .text(data.message);
   
       const typingClass = data.typing ? 'typing' : '';
+      console.log("typingclass:",typingClass)
       const $messageDiv = $('<li class="message"/>')
+      console.log("messagediv:",$messageDiv)
+      $messageDiv
         .data('username', data.username)
+      $messageDiv
         .addClass(typingClass)
+      $messageDiv
         .append($usernameDiv, $messageBodyDiv);
   
       addMessageElement($messageDiv, options);
@@ -182,8 +214,8 @@
     const getUsernameColor = (username) => {
       // Compute hash code
       let hash = 7;
-      for (let i = 0; i < username.length; i++) {
-        hash = username.charCodeAt(i) + (hash << 5) - hash;
+      for (let i = 0; i < "<%=username%>".length; i++) {
+        hash = "<%=username%>".charCodeAt(i) + (hash << 5) - hash;
       }
       // Calculate color
       const index = Math.abs(hash % COLORS.length);
@@ -193,19 +225,18 @@
     // Keyboard events
   
     $window.keydown(event => {
+      console.log(event.which)
       // Auto-focus the current input when a key is typed
       if (!(event.ctrlKey || event.metaKey || event.altKey)) {
         $currentInput.focus();
       }
       // When the client hits ENTER on their keyboard
       if (event.which === 13) {
-        if (username) {
-          sendMessage();
-          socket.emit('stop typing');
-          typing = false;
-        } else {
-          setUsername();
-        }
+        console.log("pressed enter")
+        sendMessage();
+        console.log("pressed enter")
+        socket.emit('stop typing');
+        typing = false;
       }
     });
   
@@ -216,9 +247,9 @@
     // Click events
   
     // Focus input when clicking anywhere on login page
-    $loginPage.click(() => {
-      $currentInput.focus();
-    });
+    // $loginPage.click(() => {
+    //   $currentInput.focus();
+    // });
   
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
@@ -281,11 +312,16 @@
       log('attempt to reconnect has failed');
     });
   
-  });
+  };
+  $(document).ready(function() {
+    a();
+  })
   </script>
 
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/main.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <!-- <script src="/chat/main.js"></script> -->
 </body>
 </html>

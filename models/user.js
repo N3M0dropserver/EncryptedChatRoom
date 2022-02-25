@@ -12,6 +12,10 @@ var UserSchema = mongoose.Schema({
 	username: {
 		type: String,
 		index:true
+	},
+	timeCreated: {
+		type: String,
+		default: Date.now()
 	}
 });
 

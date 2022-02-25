@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Encrypted Chat list</title>
+  <!-- <link rel="stylesheet" type="text/css" href="/chat/main.css"> -->
+  <!-- <link rel="stylesheet" src="/chat/style.css"> -->
+</head>
+<body>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <div class="users">
+        <span>users joined:</span>
+        <%if (users != null && users != undefined && users != []) {%>
+            <%users.forEach(function(user){%>
+                <div>
+                <span>username: <%=user.username%></span>
+                </div>
+                </br>
+        <!-- <li class="chat page">
+            <div class="chatArea">
+                <ul class="messages"></ul>
+            </div>
+        </li> -->
+            <%})%>
+        <% } else {%>
+            <span>Encountered an error</span>
+        <%}%>
+    </div>
+  <!-- <input style="width:100%; background-color:gray" class="inputMessage" onsubmit="sendMessage()" placeholder="Type here..."/> -->
+
+  <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <!-- <script src="/chat/main.js"></script> -->
+</body>
+</html>
