@@ -20,8 +20,6 @@ Also, be sure to have `git` available in your PATH, `npm` might need it (You can
     ```
       $ sudo apt install nodejs
       $ sudo apt install npm
-      $ sudo apt-get install docker
-      $ sudo apt-get install docker-compose
     ```
 
 - #### Node installation on Arch
@@ -30,14 +28,10 @@ Also, be sure to have `git` available in your PATH, `npm` might need it (You can
     ```
       $ sudo pacman -S nodejs
       $ sudo pacman -S npm
-      $ sudo pacman -s docker
-      $ sudo pacman -s docker-compose
     ```
     ```
       $ yay nodejs
       $ yay npm
-      $ yay docker
-      $ yay docker-compose
     ```
 
 - #### Other Operating Systems
