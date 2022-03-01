@@ -14,6 +14,10 @@ var ChatRoomSchema = mongoose.Schema({
     users: {
         type: Array
     },
+    usercap: {
+        type: Number,
+        default: 2,
+    },
     password: {
         type: String,
         default: null

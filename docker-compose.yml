@@ -1,0 +1,29 @@
+version: "3"
+services:
+  enc_express:
+    image: enc_chat
+    build: ./
+    stdin_open: true
+    ports: 
+      - "3333:3333"
+    networks: 
+      - enc_net
+    depends_on:
+      - db
+  
+  db:
+    image: mongo:4.4-bionic
+    # ports:
+    #   - "27017:27017"
+    networks:
+      - enc_net
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  enc_net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local

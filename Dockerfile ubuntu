@@ -1,0 +1,22 @@
+# FROM alpine:3.14
+FROM node:latest
+FROM mongo:latest
+FROM ubuntu:latest
+# WORKDIR /app
+RUN apt update
+RUN apt install npm nodejs
+RUN apt install mongodb-org
+RUN systemctl start mongod
+RUN systemctl enable mongod
+
+LABEL version="1.0"
+LABEL description="A simple encrypted chat room"
+WORKDIR /app
+COPY ./ /app
+RUN npm install
+
+EXPOSE 3333/tcp
+
+
+
+CMD ["nohup","node","index.js"]

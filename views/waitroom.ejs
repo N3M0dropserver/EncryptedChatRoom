@@ -25,7 +25,17 @@
         <% } else {%>
             <span>Encountered an error</span>
         <%}%>
+        <%if (owner){%>
+            <form action="/waitroom/<%=room%>" method="POST">
+                <input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
+                <button type="submit">Start chat</button>
+            </form>
+        <%}%>
     </div>
+    <script>
+    const socket = io();
+    socket.emit('waitroom join',"<%=room%>")
+    </script>
   <!-- <input style="width:100%; background-color:gray" class="inputMessage" onsubmit="sendMessage()" placeholder="Type here..."/> -->
 
   <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->

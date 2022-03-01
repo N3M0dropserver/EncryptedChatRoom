@@ -31,28 +31,96 @@
 	
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('/login/images/bg-01.jpg');">
+			<%if (rooms.password != ""){%>
 			<div class="wrap-login100 p-t-30 p-b-50">
-				<span class="login100-form-title p-b-41">
-					Room Password
-				</span>
-				<%if (error != "" && error != undefined) {%>
-					<span class="alert-danger"><%=error%></span>
-				<%}%>
-				<form class="login100-form validate-form p-b-33 p-t-5" action="/join/<%=room%>" method="POST">
-                    <input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
-					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="password" placeholder="Room Password">
-						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
-					</div>
-
-					<div class="container-login100-form-btn m-t-32">
-						<button class="login100-form-btn">
-							Enter chat room
-						</button>
-					</div>
-					<span>Dont know the password? Try join another <a href="/">here.</a></span>
-				</form>
-
+				
+				<%if (logged) {%>
+					<span class="login100-form-title p-b-41">
+						Room Password
+					</span>
+					<%if (error != "" && error != undefined) {%>
+						<span class="alert-danger"><%=error%></span>
+					<%}%>
+					<!-- <form class="login100-form validate-form p-b-33 p-t-5" action="/join/<%=room%>" method="POST">
+						<input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
+						<div class="wrap-input100 validate-input" data-validate="Enter password">
+							<input class="input100" type="password" name="password" placeholder="Room Password">
+							<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+						</div>
+	
+						<div class="container-login100-form-btn m-t-32">
+							<button class="login100-form-btn">
+								Enter chat room
+							</button>
+						</div>
+						<span>Dont know the password? Try join another <a href="/">here.</a></span>
+					</form>
+					else-->
+					<form class="login100-form validate-form p-b-33 p-t-5" action="/join/<%=room%>" method="POST">
+						<input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
+						<div class="wrap-input100 validate-input" data-validate="Enter password">
+							<input class="input100" type="password" name="password" placeholder="Room Password">
+							<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+						</div>
+	
+						<div class="container-login100-form-btn m-t-32">
+							<button class="login100-form-btn">
+								Enter chat room
+							</button>
+						</div>
+						<span>Dont know the password? Try join another <a href="/">here.</a></span>
+					</form>
+				<%} else {%>
+					<%if (!logged){%>
+						<span class="login100-form-title p-b-41">
+							anon login
+						</span>
+						<%if (error != "" && error != undefined) {%>
+							<span class="alert-danger"><%=error%></span>
+						<%}%>
+						<form class="login100-form validate-form p-b-33 p-t-5" action="/register/<%=room%>" method="POST">
+							<input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
+							<div class="wrap-input100 validate-input" data-validate="Enter username">
+								<input class="input100" type="text" name="username" placeholder="Username">
+								<input class="input100" type="password" name="password" placeholder="Password">
+								<input class="input100" type="password" name="password2" placeholder="Confirm Password">
+								<input class="input100" type="password" name="roompass" placeholder="Room password">
+								<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+							</div>
+		
+							<div class="container-login100-form-btn m-t-32">
+								<button class="login100-form-btn">
+									Enter chat room
+								</button>
+							</div>
+							<span>Dont know the password? Try join another <a href="/">here.</a></span>
+						</form>
+					<%}%>
+				<%}} else {%>
+				<%if (!logged){%>
+					<span class="login100-form-title p-b-41">
+						anon login
+					</span>
+					<%if (error != "" && error != undefined) {%>
+						<span class="alert-danger"><%=error%></span>
+					<%}%>
+					<form class="login100-form validate-form p-b-33 p-t-5" action="/anon/<%=room%>" method="POST">
+						<input type="hidden" class="_csrf" name="_csrf" value="<%=csrfToken%>"/>
+						<div class="wrap-input100 validate-input" data-validate="Enter username">
+							<input class="input100" type="text" name="username" placeholder="Username">
+							<input class="input100" type="password" name="password" placeholder="Password">
+							<input class="input100" type="password" name="password2" placeholder="Confirm Password">
+							<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+						</div>
+	
+						<div class="container-login100-form-btn m-t-32">
+							<button class="login100-form-btn">
+								Enter chat room
+							</button>
+						</div>
+						<span>Dont know the password? Try join another <a href="/">here.</a></span>
+					</form>
+				<%}}%>
 			</div>
 		</div>
 	</div>
