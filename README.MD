@@ -2,6 +2,8 @@
 
 A Project combining socket.io MongoDB Node and Express to make a simple encrypted web chat app.
 
+**Live Example:** [https://chat.zacwesleybrown.com](https://chat.zacwesleybrown.com)
+
 ---
 ## Requirements
 
@@ -90,12 +92,18 @@ There is no settings however there is a .env file. an example.env is provided bu
 ```
 SECRET="Random Secret Here" 
 DB_URI="mongodb://db:27017/encchat"
+MODE="docker" or "local"
+LOCAL_DB="mongodb://127.0.0.1:27017/encchat"
 ```
 SECRET is the secret for the tokens etc. keep this secure and long and do not share it.
 
-DB_URI is the url for the mongodb database in this case db refers to the docker container db that is on the same network as the express server. if you intend to run the system locally this will error and will need to be replaced with localhost/127.0.0.1 or an external ip/dns
+DB_URI is the url for the mongodb database in this case db refers to the docker container network db that is on the same network as the express server, this will be used if the MODE variable is set to "docker" or anything else othe than "local".
 
-feel free to make changes in `index.js` then edit it with your desired changes.
+MODE is to determine between whether the server should be run in a docker container or locally and is mainly for the database connection.
+
+LOCAL_DB is the url for the local mongodb instance this will be used if the MODE variable is set to "local".
+
+feel free to make changes in `index.js`.
 
 ## Install
 to run the system locally you can run:
@@ -123,3 +131,9 @@ $ npm start
 ```
 $ docker compose up
 ```
+---
+## Todo
+- Proper Diffie-Hellman key exchange between users.
+- Chat can handle more than 2 users but not with encryption enabled so make it work with encryption.
+- Better admin settings including kick and mute and ban and moderators etc.
+- Better options panel when setting up the chat preferably when in the waiting room.

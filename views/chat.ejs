@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="/chat/main.css">
   <!-- <link rel="stylesheet" src="/chat/style.css"> -->
 </head>
-<body>
+<body onbeforeunload='socket.emit("room disconnect", "<%=room%>")'>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   <ul class="pages">
     <li class="chat page">
@@ -44,6 +44,12 @@
     const $chatPage = $('.chat.page');          // The chatroom page
   
     const socket = io();
+
+    window.onbeforeunload = function(){
+      console.log("<%=room%>")
+      // debugger
+      socket.emit("room disconnect", "<%=room%>")
+    };
   
     // Prompt for setting a username
     let username;
@@ -273,7 +279,7 @@
     socket.on('login', (data) => {
       connected = true;
       // Display the welcome message
-      if (data["roomname"]!= undefined) {
+      if (data["roomname"] == undefined) {
         data["roomname"] = "Unnamed room"
       }
       const message = `Welcome to ${data["roomname"]} Chat – `;
@@ -291,6 +297,10 @@
   
     // Whenever the server emits 'user joined', log it in the chat body
     socket.on('user joined', (data) => {
+      if (data.username == undefined) {
+        // console.log("error")
+        return null
+      }
       console.log("new user")
       log(`${data.username} joined`);
       addParticipantsMessage(data);
@@ -335,6 +345,7 @@
   $(document).ready(function() {
     a();
   })
+  
   </script>
 
   <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->

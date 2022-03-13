@@ -11,7 +11,7 @@ var UserSchema = mongoose.Schema({
 		index:true
 	},
 	publickey: {
-
+		type: String
 	},
 	timeCreated: {
 		type: String,

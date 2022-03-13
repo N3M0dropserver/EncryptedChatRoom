@@ -24,14 +24,29 @@ const crypto = require('crypto');
 // if a user wants to join a call they have to have an account as thats how the logic will work for locking a chat room 
 
 require('dotenv').config()
-
 const MongoStore = require('connect-mongo');
-app.use(require('express-session')({
+// Connect to DB
+if (process.env.MODE == "local"){
+  console.log("!!!! running in local !!!!")
+  mongoose.connect(process.env.LOCAL_DB);
+  var db = mongoose.connection;
+  app.use(require('express-session')({
+    secret: process.env.SECRET,
+    saveUninitialized: true,
+    resave: true,
+    store: MongoStore.create({ mongoUrl: process.env.LOCAL_DB, dbName: 'encchat' })
+  }));
+} else {
+  console.log("!!!! running in docker !!!!")
+  mongoose.connect(process.env.DB_URI);
+  var db = mongoose.connection;
+  app.use(require('express-session')({
     secret: process.env.SECRET,
     saveUninitialized: true,
     resave: true,
     store: MongoStore.create({ mongoUrl: process.env.DB_URI, dbName: 'encchat' })
-}));
+  }));
+}
 
 const csrfProtect = csrf({cookie: true})
 app.use(passport.initialize());
@@ -40,9 +55,7 @@ app.use(passport.session());
 // default options
 app.use(fileUpload());
 
-// Conenct to DB
-mongoose.connect(process.env.DB_URI);
-var db = mongoose.connection;
+
 
 // BodyParser Middleware
 app.use(bodyParser.json());
@@ -116,11 +129,15 @@ app.get('/', async function (req, res) {
 })
 
 app.get('/create', csrfProtect, async function (req, res) {
+  var error = "";
   if (req.isAuthenticated()){
     console.log('loggedin as:',req.user.username)
-    res.render('create.ejs', {csrfToken: req.csrfToken(), logged: true, username: req.user.username, id: req.user.id})
+    if (req.query.e != null || req.query.e != undefined || req.query.e != ""){
+      error = decodeURIComponent(req.query.e);
+    }
+    res.render('create.ejs', {csrfToken: req.csrfToken(), logged: true, username: req.user.username, id: req.user.id, error: error})
   } else {
-      res.render('create.ejs', {csrfToken: req.csrfToken(), logged: false, username: "", id: ""})
+      res.redirect(`/login?e${encodeURIComponent("You must be logged in to an account")}&refferer=${encodeURIComponent("/create")}`)
   }
 })
 
@@ -151,7 +168,7 @@ app.post('/create', csrfProtect, async function (req, res) {
     });
     return res.redirect('/');
   } else {
-    return res.redirect(`/login?e=${encodeURIComponent("You must have an account")}&refferer=${encodeURIComponent("/create")}`)
+    return res.redirect(`/login?e=${encodeURIComponent("You must be logged in to an account")}&refferer=${encodeURIComponent("/create")}`)
   }
 })
 
@@ -162,7 +179,9 @@ app.get('/join/:id', csrfProtect, async function (req, res) {
   } catch {
     return res.status(404).send("Chat room doesnt exist or was expired.")
   }
-  
+  if (chatroom == null){
+    return res.status(404).send("chat room does not exist")
+  }
   console.log("room join:",chatroom)
   if (chatroom.length != 0){
       if (chatroom.password != ""){
@@ -193,6 +212,7 @@ app.get('/join/:id', csrfProtect, async function (req, res) {
       }
     
   } else {
+    console.log("length:",chatroom.length)
     return res.status(404).send("Chat room doesnt exist or was expired.")
   }
 })
@@ -203,6 +223,9 @@ app.post('/join/:id', csrfProtect, async function (req, res) {
     chatroom = await Chatroom.findOne({_id: req.params.id}).exec()
   } catch {
     return res.status(404).send("Chat room doesnt exist or was expired.")
+  }
+  if (chatroom == null){
+    return res.status(404).send("chat room does not exist")
   }
   console.log("room join:",chatroom)
   if (chatroom.length != 0){
@@ -248,6 +271,9 @@ app.get('/waitroom/:id', csrfProtect, async function (req, res) {
     chatroom = await Chatroom.findOne({_id: req.params.id}).exec()
   } catch {
     return res.status(404).send("Chat room doesnt exist or was expired.")
+  }
+  if (chatroom == null){
+    return res.status(404).send("chat room does not exist")
   }
   // var chatroom = await Chatroom.findById(req.params.id).exec()
   if (chatroom.length != 0 && chatroom != ""){
@@ -298,6 +324,13 @@ app.post('/waitroom/:id', csrfProtect, async function (req, res) {
     if (req.isAuthenticated()){
       if (chatroom.users[0] == req.user.username) {
         await Chatroom.findOneAndUpdate({_id: req.params.id}, {locked: true}).exec()
+        console.log("room started")
+        for (var i = 0; i < chatroom.users.length; i++){
+          console.log("chatroom.users[i]:",chatroom.users[i])
+          io.sockets.broadcast.to(chatroom.users[i]).emit('room started')
+        }
+        io.broadcast.of(`/waitroom/${req.params.id}`).emit('room started')
+        io.sockets.in(req.params.id).emit('room started')
         return res.redirect(`/chat/${req.params.id}?started=true`)
       }
       return res.status(403).send("Not the owner of the room and therfore cannot start it.")
@@ -307,7 +340,16 @@ app.post('/waitroom/:id', csrfProtect, async function (req, res) {
 
 
 app.get('/chat/:id', csrfProtect,async function (req, res) {
-  var chatroom = await Chatroom.findById(req.params.id).exec()
+  console.log("numUserDict:",numUserDict)
+  var chatroom = "";
+  try {
+    chatroom = await Chatroom.findOne({_id: req.params.id}).exec()
+  } catch {
+    return res.status(404).send("Chat room doesnt exist or was expired.")
+  }
+  if (chatroom == null){
+    return res.status(404).send("chat room does not exist")
+  }
   if (chatroom.length != 0){
     if (req.isAuthenticated()){
         if (chatroom.users.includes(req.user.username)){
@@ -348,7 +390,11 @@ app.get('/register', function (req, res) {
   if (req.isAuthenticated()){
     return res.redirect('/');
   } else {
-    return res.render('register.ejs', {error: ""});
+    var error = ""
+    if (req.query.e != null || req.query.e != undefined || req.query.e != ""){
+      error = decodeURIComponent(req.query.e);
+    }
+    return res.render('register.ejs', {error: error});
   }
   
 });
@@ -398,7 +444,11 @@ app.get('/login', function (req, res, next) {
                     return res.render('login.ejs', { error: 'Username or Password is incorrect' });
                 } else {
                     loginerror = null
-                    return res.render('login.ejs', { error: "" });
+                    var error = ""
+                    if (req.query.e != null || req.query.e != undefined || req.query.e != ""){
+                      error = decodeURIComponent(req.query.e);
+                    }
+                    return res.render('login.ejs', { error: error });
                 }
             } else {
                 return res.render('login.ejs', { error: "" })
@@ -416,6 +466,29 @@ app.post("/login", passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/",
 }))
+
+app.get("/logout", csrfProtect, (req, res) =>{
+  // User.findById(req.user._id).then((rUser)=>{
+  //   rUser.online = false;
+  //   rUser.save();
+  //   });
+  // req.logout();
+  // res.redirect("/");
+  if (req.isAuthenticated()){
+    res.render("logout.ejs", {csrfToken: req.csrfToken()});
+  } else {
+    res.redirect("/?error=not%20logged%20in");
+  }
+});
+
+app.post("/logout", csrfProtect, (req, res)=>{
+  // User.findById(req.user._id).then((rUser)=>{
+  //   rUser.online = false;
+  //   rUser.save();
+  //   });
+  req.logout();
+  res.redirect("/");
+});
 
 io.on('connection', async (socket) => {
 
@@ -460,12 +533,15 @@ io.on('connection', async (socket) => {
     
       var chatroom = "";
       try {
+        console.log("roomname1",chatroom)
         var chatroomlist = await Chatroom.findOne({_id: data["roomid"]}).exec()
-        chatroom = chatroomlist.roomname
+        chatroom = chatroomlist.name
+        console.log("roomname2",chatroom)
       } catch {
         chatroom = "Unnamed chat"
+        console.log("roomname3",chatroom)
       }
-
+    console.log("roomname",chatroom)
     socket.emit('login', {
     // io.sockets.sockets[socket.id].emit('login',{
       roomname: chatroom,
@@ -501,10 +577,13 @@ io.on('connection', async (socket) => {
   });
 
   // when the user disconnects.. perform this
-  socket.on('disconnect', (roomid) => {
+  socket.on('room disconnect', (roomid) => {
+    console.log("roomid:",roomid)
+    // console.log("socket:",socket)
     if (addedUser) {
       --numUsers;
-      if (numUserDict[roomid] != undefined){
+      if (numUserDict[roomid] != undefined || numUserDict[roomid] != "transport close"){
+        // console.log("roomid:disconnect")
         numUserDict[roomid] -= 1;
       } else {
         numUserDict[roomid] = 0;
