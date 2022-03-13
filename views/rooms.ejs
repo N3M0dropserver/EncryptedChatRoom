@@ -35,6 +35,7 @@
                 <div id="roomitem" style="text-align: center; width: 20%;">
                     <span>room name: <%=room.name%></span></br>
                     <span>room topic: <%=room.topic%></span></br>
+                    <span>Number of users: <%=room.users.length%>/<%=room.usercap%></span></br>
                     <%if (!room.locked) {%>
                         <a href="/join/<%=room.id%>">Join room</a>
                     <%} else {%>

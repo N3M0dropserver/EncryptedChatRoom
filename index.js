@@ -195,7 +195,7 @@ app.get('/join/:id', csrfProtect, async function (req, res) {
               if (req.query.e != null || req.query.e != undefined || req.query.e != ""){
                 error = decodeURIComponent(req.query.e);
               }
-              res.render('join.ejs', {csrfToken: req.csrfToken(), logged: true, username: req.user.username, id: req.user.id, room: req.params.id, rooms: chatroom, error: error} )
+              return res.render('join.ejs', {csrfToken: req.csrfToken(), logged: true, username: req.user.username, id: req.user.id, room: req.params.id, rooms: chatroom, error: error} )
             } else {
               return res.status(403).send("Chat room is locked and can now not be joined")
             }
@@ -206,7 +206,10 @@ app.get('/join/:id', csrfProtect, async function (req, res) {
         if (!req.isAuthenticated()){
           return res.redirect(`/login?e=${encodeURIComponent("You must have an account")}&refferer=${encodeURIComponent(`/join/${req.params.id}`)}`)            
         } else {
-          return res.redirect(`/chat/${req.params.id}`)
+          Chatroom.findOneAndUpdate({_id: req.params.id}, {$push: {users: req.user.username}}).exec();
+          console.log("user added to room");
+          return res.redirect(`/waitroom/${req.params.id}`)
+          // return res.redirect(`/chat/${req.params.id}`)
         }
         
       }
