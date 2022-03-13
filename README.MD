@@ -137,3 +137,4 @@ $ docker compose up
 - Chat can handle more than 2 users but not with encryption enabled so make it work with encryption.
 - Better admin settings including kick and mute and ban and moderators etc.
 - Better options panel when setting up the chat preferably when in the waiting room.
+- Refactor some of the code for cleanliness and continued development.

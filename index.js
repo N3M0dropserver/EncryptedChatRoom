@@ -172,6 +172,8 @@ app.post('/create', csrfProtect, async function (req, res) {
   }
 })
 
+// TODO: Refactor these sets of if statements so that its not as messy
+
 app.get('/join/:id', csrfProtect, async function (req, res) {
   var chatroom = "";
   try {
@@ -206,9 +208,16 @@ app.get('/join/:id', csrfProtect, async function (req, res) {
         if (!req.isAuthenticated()){
           return res.redirect(`/login?e=${encodeURIComponent("You must have an account")}&refferer=${encodeURIComponent(`/join/${req.params.id}`)}`)            
         } else {
-          Chatroom.findOneAndUpdate({_id: req.params.id}, {$push: {users: req.user.username}}).exec();
-          console.log("user added to room");
-          return res.redirect(`/waitroom/${req.params.id}`)
+          if (chatroom.users.includes(req.user.username)){
+            return res.redirect(`/waitroom/${req.params.id}`)
+          } else {
+            if (chatroom.users.length < chatroom.usercap){
+              Chatroom.findOneAndUpdate({_id: req.params.id}, {$push: {users: req.user.username}}).exec();
+              console.log("user added to room");
+              return res.redirect(`/waitroom/${req.params.id}`)
+            }
+            return res.status(403).send("User cap reached")
+          }
           // return res.redirect(`/chat/${req.params.id}`)
         }
         
