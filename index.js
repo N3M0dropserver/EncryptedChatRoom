@@ -330,9 +330,9 @@ app.post('/waitroom/:id', csrfProtect, async function (req, res) {
         console.log("room started")
         for (var i = 0; i < chatroom.users.length; i++){
           console.log("chatroom.users[i]:",chatroom.users[i])
-          io.sockets.broadcast.to(chatroom.users[i]).emit('room started')
+          io.sockets.to(chatroom.users[i]).emit('room started')
         }
-        io.broadcast.of(`/waitroom/${req.params.id}`).emit('room started')
+        // io.broadcast.of(`/waitroom/${req.params.id}`).emit('room started')
         io.sockets.in(req.params.id).emit('room started')
         return res.redirect(`/chat/${req.params.id}?started=true`)
       }

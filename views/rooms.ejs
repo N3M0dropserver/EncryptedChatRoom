@@ -7,7 +7,7 @@
   <!-- <link rel="stylesheet" src="/chat/style.css"> -->
 </head>
 <body>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <nav role="navigation" style="width: 100%;">
         <ul>
           <li><a class="navlink droplink" href="#" aria-haspopup="true">+</a>
@@ -29,7 +29,7 @@
     </br>
     </br>
     </br>
-    <div class="rooms" style="display: flex; justify-content: space-evenly; flex-direction: row;">
+    <div class="rooms" style="display: flex; justify-content: space-evenly; flex-direction: row; flex-wrap: wrap;">
         <%if (rooms != null && rooms != undefined && rooms != []) {%>
             <%rooms.forEach(function(room){%>
                 <div id="roomitem" style="text-align: center; width: 20%;">
@@ -50,7 +50,7 @@
   <!-- <input style="width:100%; background-color:gray" class="inputMessage" onsubmit="sendMessage()" placeholder="Type here..."/> -->
 
   <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
   <!-- <script src="/socket.io/socket.io.js"></script> -->
   <!-- <script src="/chat/main.js"></script> -->
